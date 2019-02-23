@@ -1,11 +1,14 @@
 #by protongamer 2018
 
+#Update 22/02/2019
+#Add support to convert array 24 bits to 16 bits(RGB565)
+
 import binascii
 import os
 
 print("24BMP2C - by protongamer")
 print("Drag your .bmp file(only 24 bit supported) to the same folder of BMP2C")
-print("Enter file name")
+print("Enter file name(ex: myPicture.bmp)")
 #img = os.path.dirname(os.path.abspath()) # /a/b/c/d/e
 #img = img + "\\"
 
@@ -84,32 +87,87 @@ h = 0
 c1 = 0;
 
 
-file.write("const uint32_t "+ name_array +"[%s"%height + "][%s"%width + "] = { \n")
-while i < byte_size-3:
-    if(c1 == 0):
-        file.write("{")
-    h = ord(a[i+offset_byte])
-    h = h << 8
-    h = h | ord(a[i+offset_byte+1])
-    h = h << 8
-    h = h | ord(a[i+offset_byte+2])
-    if(h == 0):
-        file.write("0x0000")
-    if(h > 0):
-        file.write("%s"%hex(h))
-    if(c1 < width-1 and i < byte_size-3):
-        file.write(",")
+mode = 0
+#ask mode for bmp array convert
+print "Array 16 bits(RGB565) or Array 24 bits(RGB888) ? 1 for 16 bits, 2 for 24 bits \n"
+while mode != '1' and mode != '2':
+	mode = 0
+	mode = raw_input()
+
+#16 bits
+if(mode == '1'):
+	mode = 16
+
+#24 bits	
+if(mode == '2'):
+	mode = 24
+
+if(mode == 24):
+	file.write("const uint32_t "+ name_array +"[%s"%height + "][%s"%width + "] = { \n")
+if(mode == 16):
+	file.write("const uint16_t "+ name_array +"[%s"%height + "][%s"%width + "] = { \n")
+
+if(mode == 24):
+	while i < byte_size-3:
+		if(c1 == 0):
+			file.write("{")
+		
+		h = ord(a[i+offset_byte])
+		h = h << 8
+		h = h | ord(a[i+offset_byte+1])
+		h = h << 8
+		h = h | ord(a[i+offset_byte+2])
+		
+		if(h == 0):
+			file.write("0x0000")
+		if(h > 0):
+			file.write("%s"%hex(h))
+		if(c1 < width-1 and i < byte_size-3):
+			file.write(",")
     
-    c1 = c1 + 1
-    if(c1 == width and i != byte_size-3):
-        file.write("},\n")
-        c1 = 0
-    i = i + 3
-h = ord(a[i+offset_byte])
-h = h << 8;
-h = h | ord(a[i+offset_byte+1])
-h = h << 8;
-h = h | ord(a[i+offset_byte+2])
+		c1 = c1 + 1
+		if(c1 == width and i != byte_size-3):
+			file.write("},\n")
+			c1 = 0
+		i = i + 3
+	
+if(mode == 16):
+	while i < byte_size-3:
+		if(c1 == 0):
+			file.write("{")
+		
+    
+		h = (ord(a[i+offset_byte+2])*31)/255
+		h = h << 11
+		h = h | (((ord(a[i+offset_byte+1])*63)/255) << 5)
+		h = h | (ord(a[i+offset_byte])*31)/255
+		
+		if(h == 0):
+			file.write("0x0000")
+		if(h > 0):
+			file.write("%s"%hex(h))
+		if(c1 < width-1 and i < byte_size-3):
+			file.write(",")
+    
+		c1 = c1 + 1
+		if(c1 == width and i != byte_size-3):
+			file.write("},\n")
+			c1 = 0
+		i = i + 3
+	
+if(mode == 16):
+		h = (ord(a[i+offset_byte+2])*31)/255
+		h = h << 11
+		h = h | (((ord(a[i+offset_byte+1])*63)/255) << 5)
+		h = h | (ord(a[i+offset_byte])*31)/255
+		
+if(mode == 24):
+	h = ord(a[i+offset_byte])
+	h = h << 8
+	h = h | ord(a[i+offset_byte+1])
+	h = h << 8
+	h = h | ord(a[i+offset_byte+2])
+
 if(h == 0):
     file.write("0x0000}\n")
 if(h > 0):
