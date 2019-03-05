@@ -25,7 +25,7 @@ test96x64.bmp and the same in 96 x 64 display
 ![alt text](https://raw.githubusercontent.com/protongamer/24BMP2C/master/test96x64.bmp)
 ![alt text](https://raw.githubusercontent.com/protongamer/24BMP2C/master/96x64Display.JPG)
 
-I uploaded an example code to read a bmp array of 96x64.
+I uploaded an example code to read a bmp array of 96x64(Tested on a Teensy 3.2)
 
 You need to download SSD_13XX library of sumotoy right here:
 https://github.com/sumotoy/SSD_13XX
